@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin — Midterm Lab</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="wrap wrap--wide">
+  <header class="hdr">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 4L6 12v10c0 10 7 16 16 18 9-2 16-8 16-18V12L22 4z" stroke="#5a7c65" stroke-width="2" fill="none"/>
+      <path d="M16 22l4 4 8-8" stroke="#5a7c65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1>Admin Dashboard</h1>
+    <p>Student registrations, answer keys, and data export.</p>
+  </header>
+
+  <section class="card login-box" id="sec-login">
+    <div class="alert" id="login-alert" role="alert"></div>
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="pw">Password</label>
+        <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" id="login-btn">
+        <span class="spinner"></span>
+        <span class="btn-label">Login</span>
+      </button>
+    </form>
+  </section>
+
+  <section id="sec-dash" style="display:none">
+    <div class="stats">
+      <div class="stat"><b id="st-total">0</b><small>Students</small></div>
+      <div class="stat"><b id="st-today">0</b><small>Today</small></div>
+      <div class="stat"><b id="st-types">5</b><small>Cipher Types</small></div>
+    </div>
+    <div class="toolbar">
+      <div class="search"><input type="text" id="search" placeholder="Search name or ID..."></div>
+      <button class="btn btn-outline btn-sm" id="btn-refresh">Refresh</button>
+      <button class="btn btn-outline btn-sm" id="btn-export">Export CSV</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Date</th><th>Token</th><th>Cases</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty-msg">No students registered yet.</div>
+  </section>
+
+  <footer class="ftr"><hr><p>Admin Dashboard</p></footer>
+</div>
+<script src="/admin/app.js"></script>
+</body>
+</html>
