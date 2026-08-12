@@ -257,6 +257,11 @@ app.get('/api/admin/export', requireAdmin, function (_req, res) {
   res.send(csv);
 });
 
+app.post('/api/admin/clear', requireAdmin, function (_req, res) {
+  saveStudents([]);
+  res.json({ success: true, message: 'All student records have been reset.' });
+});
+
 // ── Catch-all for undefined routes ────────────────────────
 app.use(function (_req, res) {
   res.status(404).send('Not found');

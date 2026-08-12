@@ -193,4 +193,20 @@
       setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
     });
   });
+
+  var clearBtn = document.getElementById('btn-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      if (confirm('Are you sure you want to delete all student records? This will clear all test data.')) {
+        fetch('/api/admin/clear', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function () {
+          load();
+        });
+      }
+    });
+  }
 })();
