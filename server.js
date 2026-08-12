@@ -263,9 +263,7 @@ app.use(function (_req, res) {
 });
 
 // ── Start ─────────────────────────────────────────────────
-app.listen(PORT, '127.0.0.1', function () {
+app.listen(PORT, '0.0.0.0', function () {
   console.log('\n  Midterm Lab Generator');
-  console.log('  Student : http://127.0.0.1:' + PORT + '/');
-  console.log('  Admin   : http://127.0.0.1:' + PORT + '/admin?key=' + ADMIN_PASSWORD);
-  console.log('');
+  console.log('  Running on port ' + PORT);
 });
