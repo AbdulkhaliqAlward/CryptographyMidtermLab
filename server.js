@@ -149,14 +149,16 @@ app.post('/api/generate', genLimiter, async function (req, res) {
     var cleanId = studentId.trim();
 
     var students = loadStudents();
-    var byId = students.find(function (s) { return s.studentId === cleanId; });
-    if (byId) return res.status(409).json({
-      error: 'Student ID ' + cleanId + ' is already registered. Each student can generate their assignment only once.'
+    var normName = cleanName.toLowerCase();
+    var existing = students.find(function (s) {
+      return s.studentId === cleanId || s.studentName.toLowerCase() === normName;
     });
-    var byName = students.find(function (s) { return s.studentName.toLowerCase() === cleanName.toLowerCase(); });
-    if (byName) return res.status(409).json({
-      error: 'This name is already registered. Contact your instructor if this is an error.'
-    });
+
+    if (existing) {
+      return res.status(409).json({
+        error: 'Registration declined: This student record has already been registered. Each student is permitted to generate their assignment only once. Contact your instructor if you require assistance.'
+      });
+    }
 
     var result = generateLab(cleanName, cleanId);
     var zipData = await result.zipBuffer;
