@@ -21,18 +21,7 @@ if (!process.env.ADMIN_PASSWORD) {
 }
 
 // ── Data store ────────────────────────────────────────────
-const DATA_DIR = path.join(__dirname, 'data');
-const STUDENTS_FILE = path.join(DATA_DIR, 'students.json');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-
-function loadStudents() {
-  if (!fs.existsSync(STUDENTS_FILE)) return [];
-  try { return JSON.parse(fs.readFileSync(STUDENTS_FILE, 'utf-8')); }
-  catch { return []; }
-}
-function saveStudents(list) {
-  fs.writeFileSync(STUDENTS_FILE, JSON.stringify(list, null, 2), 'utf-8');
-}
+const db = require('./lib/database');
 
 // ── Download tokens (one-time, expires after 60s) ─────────
 const downloadTokens = new Map(); // token -> { zipBuffer, filename, expires }
@@ -179,7 +168,7 @@ app.post('/api/generate', genLimiter, async function (req, res) {
     var cleanName = name.trim().replace(/\s+/g, ' ');
     var cleanId = toStandardDigits(studentId.trim()); // normalize Arabic numerals to standard digits
 
-    var students = loadStudents();
+    var students = await db.loadStudents();
     var normName = normalizeArabic(cleanName);
     var existing = students.find(function (s) {
       return s.studentId === cleanId || normalizeArabic(s.studentName) === normName;
@@ -196,7 +185,7 @@ app.post('/api/generate', genLimiter, async function (req, res) {
     var answerKey = result.answerKey;
 
     // Save student record
-    students.push({
+    await db.addStudent({
       studentName: cleanName,
       studentId: cleanId,
       generatedAt: new Date().toISOString(),
@@ -207,7 +196,6 @@ app.post('/api/generate', genLimiter, async function (req, res) {
       stegoMessage: answerKey.stegoMessage,
       cipherOrder: answerKey.cipherOrder,
     });
-    saveStudents(students);
 
     // Create one-time download token
     var safeId = cleanId.replace(/[^a-zA-Z0-9]/g, '');
@@ -271,12 +259,12 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-app.get('/api/admin/students', requireAdmin, function (_req, res) {
-  res.json({ students: loadStudents() });
+app.get('/api/admin/students', requireAdmin, async function (_req, res) {
+  res.json({ students: await db.loadStudents() });
 });
 
-app.get('/api/admin/export', requireAdmin, function (_req, res) {
-  var students = loadStudents();
+app.get('/api/admin/export', requireAdmin, async function (_req, res) {
+  var students = await db.loadStudents();
   var csv = 'Name,ID,Date,Token,Cipher Order\n';
   for (var i = 0; i < students.length; i++) {
     var s = students[i];
@@ -290,8 +278,8 @@ app.get('/api/admin/export', requireAdmin, function (_req, res) {
   res.send(csv);
 });
 
-app.post('/api/admin/clear', requireAdmin, function (_req, res) {
-  saveStudents([]);
+app.post('/api/admin/clear', requireAdmin, async function (_req, res) {
+  await db.clearStudents();
   res.json({ success: true, message: 'All student records have been reset.' });
 });
 
@@ -301,7 +289,9 @@ app.use(function (_req, res) {
 });
 
 // ── Start ─────────────────────────────────────────────────
-app.listen(PORT, '0.0.0.0', function () {
-  console.log('\n  Midterm Lab Generator');
-  console.log('  Running on port ' + PORT);
+db.initDB().then(() => {
+  app.listen(PORT, '0.0.0.0', function () {
+    console.log('\n  Midterm Lab Generator');
+    console.log('  Running on port ' + PORT);
+  });
 });
