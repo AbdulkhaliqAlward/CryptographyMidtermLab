@@ -91,19 +91,32 @@ const genLimiter = rateLimit({ windowMs: 60 * 1000, max: 5, standardHeaders: tru
 app.use(express.json({ limit: '2kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+function normalizeArabic(str) {
+  if (!str) return '';
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\u064B-\u065F\u0670]/g, '') // remove Arabic tashkeel (diacritics)
+    .replace(/\s+/g, ' ');
+}
+
 // ── Validation ────────────────────────────────────────────
 function validateName(name) {
   if (!name || typeof name !== 'string') return 'Name is required.';
   var t = name.trim();
-  if (t.length < 5 || t.length > 100) return 'Name must be 5-100 characters.';
-  if (!/^[\u0600-\u06FFa-zA-Z\s]+$/.test(t)) return 'Name must contain only letters and spaces.';
+  if (t.length < 3 || t.length > 100) return 'Name must be 3-100 characters.';
+  // Supports all Arabic letters, Latin letters, spaces, and hyphens
+  if (!/^[\u0600-\u06FFa-zA-Z\s\-]+$/.test(t)) return 'Name must contain only letters and spaces.';
   var parts = t.split(/\s+/).filter(function (p) { return p.length > 0; });
-  if (parts.length < 3) return 'Full name must have at least 3 parts.';
+  if (parts.length < 3) return 'Please enter your full three-part name (First, Father, Family).';
   return null;
 }
 function validateId(id) {
   if (!id || typeof id !== 'string') return 'Student ID is required.';
-  if (!/^\d{4,12}$/.test(id.trim())) return 'Student ID must be 4-12 digits.';
+  if (!/^\d{4,16}$/.test(id.trim())) return 'Student ID must be 4-16 digits.';
   return null;
 }
 
@@ -149,9 +162,9 @@ app.post('/api/generate', genLimiter, async function (req, res) {
     var cleanId = studentId.trim();
 
     var students = loadStudents();
-    var normName = cleanName.toLowerCase();
+    var normName = normalizeArabic(cleanName);
     var existing = students.find(function (s) {
-      return s.studentId === cleanId || s.studentName.toLowerCase() === normName;
+      return s.studentId === cleanId || normalizeArabic(s.studentName) === normName;
     });
 
     if (existing) {

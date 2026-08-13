@@ -25,7 +25,8 @@
     var fields = [firstName, fatherName, familyName];
     for (var i = 0; i < fields.length; i++) {
       var v = fields[i].value.trim();
-      if (!v || v.length < 2 || !/^[\u0600-\u06FFa-zA-Z\s]+$/.test(v)) {
+      // Supports Arabic Unicode range, Latin characters, and hyphens/spaces
+      if (!v || v.length < 2 || !/^[\u0600-\u06FF\u0750-\u077Fa-zA-Z\s\-]+$/.test(v)) {
         fields[i].classList.add('err');
         fields[i].classList.remove('ok');
         valid = false;
@@ -35,10 +36,10 @@
       }
     }
     var id = idField.value.trim();
-    if (!/^\d{4,12}$/.test(id)) {
+    if (!/^\d{4,16}$/.test(id)) {
       idField.classList.add('err');
       idField.classList.remove('ok');
-      idErr.textContent = 'Enter 4-12 digits.';
+      idErr.textContent = 'Enter 4-16 digits.';
       idErr.classList.add('show');
       valid = false;
     } else {

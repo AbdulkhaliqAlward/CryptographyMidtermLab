@@ -27,21 +27,21 @@
 
     <form id="lab-form" novalidate>
       <div class="field">
-        <label for="f-first">First Name</label>
-        <input type="text" id="f-first" placeholder="Your first name" autocomplete="given-name" required maxlength="40">
+        <label for="f-first">First Name / الاسم الأول</label>
+        <input type="text" id="f-first" placeholder="e.g. محمد or Mohammed" autocomplete="given-name" required maxlength="50">
       </div>
       <div class="field">
-        <label for="f-father">Father Name</label>
-        <input type="text" id="f-father" placeholder="Your father name" autocomplete="additional-name" required maxlength="40">
+        <label for="f-father">Father Name / اسم الأب</label>
+        <input type="text" id="f-father" placeholder="e.g. علي or Ali" autocomplete="additional-name" required maxlength="50">
       </div>
       <div class="field">
-        <label for="f-family">Family Name</label>
-        <input type="text" id="f-family" placeholder="Your family name" autocomplete="family-name" required maxlength="40">
+        <label for="f-family">Family Name / اللقب</label>
+        <input type="text" id="f-family" placeholder="e.g. صالح or Saleh" autocomplete="family-name" required maxlength="50">
       </div>
       <div class="field">
-        <label for="f-id">Student ID</label>
-        <input type="text" id="f-id" placeholder="Your university ID number" autocomplete="off" required maxlength="12" inputmode="numeric">
-        <span class="hint">Numeric only, 4 to 12 digits.</span>
+        <label for="f-id">Student ID / الرقم الجامعي</label>
+        <input type="text" id="f-id" placeholder="e.g. 20231105" autocomplete="off" required maxlength="16" inputmode="numeric">
+        <span class="hint">Numeric only, 4 to 16 digits (أرقام فقط).</span>
         <div class="errmsg" id="id-err"></div>
       </div>
 
