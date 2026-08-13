@@ -283,6 +283,10 @@ app.post('/api/admin/clear', requireAdmin, async function (_req, res) {
   res.json({ success: true, message: 'All student records have been reset.' });
 });
 
+app.get('/api/admin/dbstatus', function (_req, res) {
+  res.json(db.getStatus());
+});
+
 // ── Catch-all for undefined routes ────────────────────────
 app.use(function (_req, res) {
   res.status(404).send('Not found');
