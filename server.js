@@ -177,7 +177,7 @@ app.post('/api/generate', genLimiter, async function (req, res) {
     if (idErr) return res.status(400).json({ error: idErr });
 
     var cleanName = name.trim().replace(/\s+/g, ' ');
-    var cleanId = studentId.trim();
+    var cleanId = toStandardDigits(studentId.trim()); // normalize Arabic numerals to standard digits
 
     var students = loadStudents();
     var normName = normalizeArabic(cleanName);
