@@ -51,8 +51,23 @@
     return valid;
   }
 
+  function toStandardDigits(str) {
+    if (!str) return '';
+    return str
+      .replace(/[٠۰]/g, '0')
+      .replace(/[١۱]/g, '1')
+      .replace(/[٢۲]/g, '2')
+      .replace(/[٣۳]/g, '3')
+      .replace(/[٤۴]/g, '4')
+      .replace(/[٥۵]/g, '5')
+      .replace(/[٦۶]/g, '6')
+      .replace(/[٧۷]/g, '7')
+      .replace(/[٨۸]/g, '8')
+      .replace(/[٩۹]/g, '9');
+  }
+
   idField.addEventListener('input', function () {
-    idField.value = idField.value.replace(/\D/g, '');
+    idField.value = toStandardDigits(idField.value).replace(/\D/g, '');
   });
 
   form.addEventListener('submit', function (e) {

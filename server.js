@@ -70,23 +70,25 @@ app.use(function (req, res, next) {
   const lower = req.path.toLowerCase();
   // Block direct access to data, lib, private, .env, package.json, node_modules
   if (lower.startsWith('/data') ||
-      lower.startsWith('/lib') ||
-      lower.startsWith('/private') ||
-      lower.startsWith('/assets') ||
-      lower.startsWith('/node_modules') ||
-      lower.startsWith('/.env') ||
-      lower.startsWith('/.git') ||
-      lower === '/package.json' ||
-      lower === '/package-lock.json' ||
-      lower === '/server.js') {
+    lower.startsWith('/lib') ||
+    lower.startsWith('/private') ||
+    lower.startsWith('/assets') ||
+    lower.startsWith('/node_modules') ||
+    lower.startsWith('/.env') ||
+    lower.startsWith('/.git') ||
+    lower === '/package.json' ||
+    lower === '/package-lock.json' ||
+    lower === '/server.js') {
     return res.status(404).send('Not found');
   }
   next();
 });
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 120, standardHeaders: true, legacyHeaders: false }));
-const genLimiter = rateLimit({ windowMs: 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false,
-  message: { error: 'Too many requests. Wait a moment.' } });
+const genLimiter = rateLimit({
+  windowMs: 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false,
+  message: { error: 'Too many requests. Wait a moment.' }
+});
 
 app.use(express.json({ limit: '2kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -103,6 +105,21 @@ function normalizeArabic(str) {
     .replace(/\s+/g, ' ');
 }
 
+function toStandardDigits(str) {
+  if (!str) return '';
+  return str
+    .replace(/[٠۰]/g, '0')
+    .replace(/[١۱]/g, '1')
+    .replace(/[٢۲]/g, '2')
+    .replace(/[٣۳]/g, '3')
+    .replace(/[٤۴]/g, '4')
+    .replace(/[٥۵]/g, '5')
+    .replace(/[٦۶]/g, '6')
+    .replace(/[٧۷]/g, '7')
+    .replace(/[٨۸]/g, '8')
+    .replace(/[٩۹]/g, '9');
+}
+
 // ── Validation ────────────────────────────────────────────
 function validateName(name) {
   if (!name || typeof name !== 'string') return 'Name is required.';
@@ -116,7 +133,8 @@ function validateName(name) {
 }
 function validateId(id) {
   if (!id || typeof id !== 'string') return 'Student ID is required.';
-  if (!/^\d{4,16}$/.test(id.trim())) return 'Student ID must be 4-16 digits.';
+  var clean = toStandardDigits(id.trim());
+  if (!/^\d{4,16}$/.test(clean)) return 'Student ID must be 4-16 digits.';
   return null;
 }
 
